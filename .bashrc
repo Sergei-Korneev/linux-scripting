@@ -96,11 +96,20 @@ alias l='ls -CF'
 # My aliases----------------------------------------------------------------------------------------------------------------
 
 #Apps
-alias tg680='/opt/telegram/telegram -many -workdir  /media/NTRCD/MYDOCS/ALL/local/all/tdata/680  >/dev/null 2>&1 & disown -h %1'
-alias tg9487='/opt/telegram/telegram -many -workdir /media/NTRCD/MYDOCS/ALL/local/all/tdata/94870   >/dev/null 2>&1 & disown -h %1'
-alias joplin='cd "/media/NTRCD/MYDOCS/ALL/local/all/.joplin" && ./Joplin.AppImage.sh   >/dev/null 2>&1 & disown -h %1'
-alias fprof1='firefox -start-debugger-server --profile "/media/NTRCD/MYDOCS/ALL/local/all/FirefoxProfile"   >/dev/null 2>&1 & disown -h %1'
-alias thunder='thunderbird -profile "/media/NTRCD/MYDOCS/ALL/local/all/thunderbird/.thunderbird/sa4o6cv0.default"   >/dev/null 2>&1 & disown -h %1'
+alias tg680='/opt/telegram/telegram -many -workdir  /media/NTRCD/MYDOCS/ALL/local/all/tdata/680  >/dev/null 2>&1 &
+disown $!'
+
+alias tg9487='/opt/telegram/telegram -many -workdir /media/NTRCD/MYDOCS/ALL/local/all/tdata/94870   >/dev/null 2>&1 & 
+disown $!'
+
+alias joplin='cd "/media/NTRCD/MYDOCS/ALL/local/all/.joplin" && ./Joplin.AppImage.sh   >/dev/null 2>&1 & 
+disown $!'
+
+alias fprof1='firefox -start-debugger-server --profile "/media/NTRCD/MYDOCS/ALL/local/all/FirefoxProfile"   >/dev/null 2>&1 & 
+disown $!'
+
+alias thunder='thunderbird -profile "/media/NTRCD/MYDOCS/ALL/local/all/thunderbird/.thunderbird/sa4o6cv0.default"   >/dev/null 2>&1 &
+disown $!'
 
 
 #ffmpeg
@@ -221,6 +230,8 @@ cd /media/NTRCD/MYDOCS/ALL/local/all/ytdl && python3 yb.py $1
 alias addvn='echo Listening for links on 9000...&&nc -lp 9000 >> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt'
 alias updyoutdl='sudo wget -O /usr/bin/youtube-dl https://yt-dl.org/downloads/latest/youtube-dl && sudo chmod 755 /usr/bin/youtube-dl'
 
+
+# WINEPREFIX=/home/sergei/.local/share/wineprefixes/prefix32 WINEARCH=win32 wine /media/veracrypt1/MYDOCS/ALL/MCom/cstexloc/EssentialPIMPort4/startessentialpimport.exe
 alias graphics='sudo system76-power help && sudo system76-power graphics'
 alias graphicshyb='sudo system76-power graphics hybrid'
 alias graphicsint='sudo system76-power graphics integrated'
