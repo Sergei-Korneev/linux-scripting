@@ -120,9 +120,18 @@ makegif () {
   duration=${3:-5}
   scale=${4:-200}
   crop=${5:-""}
-  ffmpeg -ss $skipto -t $duration -i $1  -vf "$crop fps=10,scale=$scale:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 $1.gif
+  ffmpeg -ss $skipto -t $duration -i "$1" -vf "$crop fps=10,scale=$scale:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 "$1.gif"
 
 }
+
+
+makemp4 () {
+  echo "makemp4 <file to convert> <bitrate (e.g. 1M)>"
+  echo 
+ffmpeg   -i "$1"   -c:v libx264 -b:v $2 -maxrate 2M -bufsize 1M "$1.mp4"
+}
+
+
 
 
 alias scrs='gnome-screenshot -a -c'
@@ -225,11 +234,11 @@ alias edittor='sudo nano /etc/tor/torrc'
 
 #youtubdl
 addv(){
-echo $*>> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt
+echo "$1">> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt
 }
 
 addf(){
-echo $*>> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/files.txt
+echo "$1">> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/files.txt
 }
 
 ytdlr(){
@@ -239,7 +248,7 @@ cd /media/NTRCD/MYDOCS/ALL/local/all/ytdl && python3 yb.py $1
 
 
 alias addvn='echo Listening for links on 9000...&&nc -lp 9000 >> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt'
-alias updyoutdl='sudo wget -O /usr/bin/youtube-dl https://yt-dl.org/downloads/latest/youtube-dl && sudo chmod 755 /usr/bin/youtube-dl'
+alias updyoutdl='sudo wget -O /usr/bin/youtube-dl https://yt-dl.org/downloads/latest/youtube-dl ; sudo chmod 755 /usr/bin/youtube-dl;sudo cp /usr/bin/youtube-dl /usr/local/bin/youtube-dl; sudo chmod 755  /usr/local/bin/youtube-dl'
 
 
 # WINEPREFIX=/home/sergei/.local/share/wineprefixes/prefix32 WINEARCH=win32 wine /media/veracrypt1/MYDOCS/ALL/MCom/cstexloc/EssentialPIMPort4/startessentialpimport.exe
@@ -261,6 +270,24 @@ sudo kill -9 $(pgrep $1)
 }
 
 
+
+function highlight() {
+	declare -A fg_color_map
+	fg_color_map[black]=30
+	fg_color_map[red]=31
+	fg_color_map[green]=32
+	fg_color_map[yellow]=33
+	fg_color_map[blue]=34
+	fg_color_map[magenta]=35
+	fg_color_map[cyan]=36
+	 
+	fg_c=$(echo -e "\e[1;${fg_color_map[$1]}m")
+	c_rs=$'\e[0m'
+	sed -u s"/$2/$fg_c\0$c_rs/g"
+}
+
+
+
 # Set the title string at the top of your current terminal window or terminal window tab
 set-title() {
     # If the length of string stored in variable `PS1_BAK` is zero...
@@ -276,6 +303,26 @@ set-title() {
     # Now append the escaped title string to the end of your original `PS1` string (`PS1_BAK`), and set your
     # new `PS1` string to this new value
     PS1=${PS1_BAK}${TITLE}
+}
+
+
+#Shell
+
+#Gnome wallpaper changer
+set-wallpaper () {
+uri=$(gsettings get org.gnome.desktop.background picture-uri)  
+
+
+ls "$1/"*.{jpg,jpeg,png,bmp} |sort -R |while read i; 
+ do
+  if [ $uri != "'file://$i'" ]; then
+    echo Setting new wallpaper "file://$i"
+    gsettings set org.gnome.desktop.background picture-uri  "file://$i" ;
+    break
+
+  fi   
+done
+
 }
 
 alias setdir2='echo Setting dirs-2...  
