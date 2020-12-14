@@ -124,11 +124,31 @@ makegif () {
 
 }
 
+makemp3 () {
+  echo "makemp3 <picture file to convert> <soundtrack file>"
+  echo
+ffmpeg -loop 1 -i "$1" -i "$2" -shortest -acodec copy  -vf fps=1 $1".mp4" 
+
+}
+
 
 makemp4 () {
-  echo "makemp4 <file to convert> <bitrate (e.g. 1M)>"
+
+if [ -z "$1" ]
+then
+  echo "makemp4 <file to convert> <bitrate (e.g. 1M,2000k)>  <scale>"
   echo 
-ffmpeg   -i "$1"   -c:v libx264 -b:v $2 -maxrate 2M -bufsize 1M "$1.mp4"
+  return 1
+fi  
+
+scale=""
+if ! [ -z "$3" ]
+then
+      scale=",scale=$3:-1"
+fi  
+
+  
+ffmpeg   -i "$1"    -c:v h264_nvenc  -b:v $2 -maxrate $2 -bufsize $2 -vf  "yadif$scale"  "$1.mp4"
 }
 
 
@@ -230,15 +250,65 @@ fi
 
 }
 
+
+
+mountoffset(){
+
+
+if [ -z "$1" ]
+then
+      echo "mountoffset pathtoimage offset (in sectors)"
+      return 1
+fi
+
+if [ ! -f  "$1" ]; then
+    echo "Image file not found!"
+    return 2
+fi
+
+
+if [ -z "$2" ]
+then
+      offset=0
+else  
+      offset=$2
+fi
+
+
+FILE=$1
+FILENAME=${FILE##*/}
+sudo echo Partitions on image "$1" :
+echo
+echo
+sudo fdisk -lu "$1"
+echo
+echo
+
+echo Trying to mount image  "'$FILENAME'" ...
+echo
+echo
+
+mod=$(echo "$FILENAME" | sed -r 's/[ ;:.-=\$\#\@\$\&\*\(\)+~\%]+/_/g' )
+sudo mkdir -p "/media/$mod"
+sudo  mount   -o rw,loop,offset=$(($offset*512)),umask=0000  "$1"  "/media/$mod" && echo "Mounted to /media/$mod"
+
+
+
+}
+
+
+
+
+
 alias edittor='sudo nano /etc/tor/torrc'
 
 #youtubdl
 addv(){
-echo "$1">> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt
+echo "$*">> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt
 }
 
 addf(){
-echo "$1">> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/files.txt
+echo "$*">> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/files.txt
 }
 
 ytdlr(){
@@ -248,7 +318,7 @@ cd /media/NTRCD/MYDOCS/ALL/local/all/ytdl && python3 yb.py $1
 
 
 alias addvn='echo Listening for links on 9000...&&nc -lp 9000 >> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt'
-alias updyoutdl='sudo wget -O /usr/bin/youtube-dl https://yt-dl.org/downloads/latest/youtube-dl ; sudo chmod 755 /usr/bin/youtube-dl;sudo cp /usr/bin/youtube-dl /usr/local/bin/youtube-dl; sudo chmod 755  /usr/local/bin/youtube-dl'
+alias updyoutdl='sudo wget -O /usr/bin/youtube-dl https://yt-dl.org/downloads/latest/youtube-dl ; sudo chmod 755 /usr/bin/youtube-dl;sudo cp /usr/bin/youtube-dl /usr/local/bin/youtube-dl; sudo chmod 755  /usr/local/bin/youtube-dl; sudo cp /usr/bin/youtube-dl /home/sergei/.local/bin/youtube-dl; sudo chmod 755 /home/sergei/.local/bin/youtube-dl'
 
 
 # WINEPREFIX=/home/sergei/.local/share/wineprefixes/prefix32 WINEARCH=win32 wine /media/veracrypt1/MYDOCS/ALL/MCom/cstexloc/EssentialPIMPort4/startessentialpimport.exe
@@ -306,8 +376,29 @@ set-title() {
 }
 
 
-#Shell
+#ACPI
 
+wakemeup(){
+
+
+if [ -z "$1" ]
+then
+      echo "use: wakemeup  2020-02-28 15:00 or  wakemeup  15:00 "
+      return 1
+fi
+
+
+sudo rtcwake -m show
+sudo rtcwake -m no --date $1  
+sudo rtcwake -m show
+
+}
+
+
+
+
+
+#Shell
 #Gnome wallpaper changer
 set-wallpaper () {
 uri=$(gsettings get org.gnome.desktop.background picture-uri)  
@@ -315,7 +406,7 @@ uri=$(gsettings get org.gnome.desktop.background picture-uri)
 
 ls "$1/"*.{jpg,jpeg,png,bmp} |sort -R |while read i; 
  do
-  if [ $uri != "'file://$i'" ]; then
+  if [ "$uri" != "'file://$i'" ]; then
     echo Setting new wallpaper "file://$i"
     gsettings set org.gnome.desktop.background picture-uri  "file://$i" ;
     break
@@ -330,7 +421,7 @@ xdg-user-dirs-update --set DESKTOP "/media/NTRCD/MYDOCS/DESKTOP"
 xdg-user-dirs-update --set DOWNLOAD "/media/NTRCD/MYDOCS/Downloads" 
 #;xdg-user-dirs-update --set DOCUMENTS "$HOME/Documents" \
 #;xdg-user-dirs-update --set MUSIC "$HOME/Music" \
-#;xdg-user-dirs-update --set PICTURES "$HOME/Pictures" \
+xdg-user-dirs-update --set PICTURES "/media/NTRCD/MYDOCS/Pictures" 
 #;xdg-user-dirs-update --set VIDEOS "$HOME/Videos" \
 nautilus -q 
 killall -3 gnome-shell 
@@ -342,7 +433,7 @@ xdg-user-dirs-update --set DESKTOP "$HOME/Desktop"
 xdg-user-dirs-update --set DOWNLOAD "$HOME/Downloads" 
 #;xdg-user-dirs-update --set DOCUMENTS "$HOME/Documents" \
 #;xdg-user-dirs-update --set MUSIC "$HOME/Music" \
-#;xdg-user-dirs-update --set PICTURES "$HOME/Pictures" \
+xdg-user-dirs-update --set PICTURES "$HOME/Pictures"
 #;xdg-user-dirs-update --set VIDEOS "$HOME/Videos" \
 nautilus -q 
 killall -3 gnome-shell 
