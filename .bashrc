@@ -152,6 +152,36 @@ ffmpeg   -i "$1"    -c:v h264_nvenc  -b:v $2 -maxrate $2 -bufsize $2 -vf  "yadif
 }
 
 
+#simple video grabber
+sgrab () {
+
+if [ -z "$1" ] || [ -z "$2"]
+then
+  echo "grabv <URL> <ext e.g. mp4> "
+  echo 
+  return 1
+fi  
+
+
+ wget --no-check-certificate $(curl "$1"  | grep -oP "http.*.$2\b"  | head -n 1)
+
+
+}
+
+
+
+makesongwithpic () {
+
+if [ -z "$1" ] || [ -z "$2"]
+then
+  echo "makesongwithpic <music file to convert> <pic file to add>"
+  echo 
+  return 1
+fi  
+
+ffmpeg -loop 1 -y -i "$2" -i "$1"  -shortest -acodec copy -vcodec mjpeg "$1".mp4
+
+}
 
 
 alias scrs='gnome-screenshot -a -c'
@@ -298,9 +328,13 @@ sudo  mount   -o rw,loop,offset=$(($offset*512)),umask=0000  "$1"  "/media/$mod"
 
 
 
+#system
+alias pcoff='systemctl shutdown'
+alias susp='systemctl suspend'
+alias hibern='systemctl hibernate'
+alias edtor='sudo nano /etc/tor/torrc'
 
 
-alias edittor='sudo nano /etc/tor/torrc'
 
 #youtubdl
 addv(){
