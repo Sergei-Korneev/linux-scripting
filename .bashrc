@@ -170,6 +170,22 @@ fi
 
 
 
+cutvid () {
+
+if [ -z "$1" ]
+then
+  echo "cutvid <file to convert> <start time e.g. 11:00>  <duration e.g. 25:00>"
+  echo 
+  return 1
+fi  
+
+
+  
+ffmpeg -ss $2 -i "$1"   -t $3 -c copy "$1_cut_${2/:/_}.${1##*.}"
+  
+  
+}
+
 makesongwithpic () {
 
 if [ -z "$1" ] || [ -z "$2"]
