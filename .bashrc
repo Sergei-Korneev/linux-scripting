@@ -113,6 +113,8 @@ disown $!'
 
 
 #ffmpeg
+
+
 makegif () {
   echo "makegif <file to convert> <skip in sec> <duration in sec> <scale in pix> <crop=out_w:out_h:x:y,>"
   echo 
