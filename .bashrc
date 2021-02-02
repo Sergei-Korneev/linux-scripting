@@ -372,6 +372,26 @@ alias addvn='echo Listening for links on 9000...&&nc -lp 9000 >> /media/NTRCD/MY
 alias updyoutdl='sudo wget -O /usr/bin/youtube-dl https://yt-dl.org/downloads/latest/youtube-dl ; sudo chmod 755 /usr/bin/youtube-dl;sudo cp /usr/bin/youtube-dl /usr/local/bin/youtube-dl; sudo chmod 755  /usr/local/bin/youtube-dl; sudo cp /usr/bin/youtube-dl /home/sergei/.local/bin/youtube-dl; sudo chmod 755 /home/sergei/.local/bin/youtube-dl'
 
 
+
+
+#git 
+gitpushdir(){
+
+if [ -z "$1" ]
+then
+      echo "gitpushdir <dir>"
+      return 1
+fi
+
+git config --global credential.helper cache
+git -C "$1" commit -am "changed something"&&git -C "$1" push
+
+
+
+
+}
+
+
 # WINEPREFIX=/home/sergei/.local/share/wineprefixes/prefix32 WINEARCH=win32 wine /media/veracrypt1/MYDOCS/ALL/MCom/cstexloc/EssentialPIMPort4/startessentialpimport.exe
 alias graphics='sudo system76-power help && sudo system76-power graphics'
 alias graphicshyb='sudo system76-power graphics hybrid'
