@@ -296,7 +296,7 @@ if [[ -d "$1" ]]; then
     find "$1" -type f -exec md5sum {} + | sort | awk 'BEGIN{lasthash = ""} $1 == lasthash {print $0} {lasthash = $1}' |  cut -c35- | sed "s/.*/"\""&"\""/" | xargs rm
     find "$1" -type d -empty -print| xargs -r rm -r 
 else
-    echo "Removes duplicate files. Use rmdup <directory>"
+    echo "Removes duplicate files and empty dirs. Use rmdup <directory>"
     
 fi
 
