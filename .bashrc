@@ -396,7 +396,7 @@ sudo kill -9 $(pgrep $1)
 }
 
 
-#git 
+# git 
 gitpushdir(){
 
 if [ -z "$1" ]
