@@ -433,8 +433,10 @@ function highlight() {
 
 savehist(){
 
-exclw='!/addv|addf|ytdlr|setdir1|tg680|firefox|thunder|fprof1|crontab|reboot|joplin|htop/'
-history | awk $exclw| awk '{print substr($0,6)}' | sort | uniq   >> ~/historybk.txt && cat ~/historybk.txt | sort | uniq   > ~/bashhistory.txt.tmp && mv ~/bashhistory.txt.tmp ~/historybk.txt     
+exclw='!/addv|addf|ytdlr|setdir1|tg680|firefox|thunder|fprof1|crontab|reboot|joplin|htop|gedit/'
+tmpf=~/bashhistory.txt.tmp
+hisf=~/historybk.txt
+history | awk $exclw| awk '{print substr($0,6)}' | sort | uniq   >> $hisf && cat $hisf | sort | uniq   > $tmpf && mv $tmpf $hisf     
 
 
 
