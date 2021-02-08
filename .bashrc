@@ -428,7 +428,17 @@ function highlight() {
 	sed -u s"/$2/$fg_c\0$c_rs/g"
 }
 
+#save sorted bash history 
 
+
+savehist(){
+
+exclw='!/addv|addf|ytdlr|setdir1|tg680|firefox|thunder|fprof1|crontab|reboot|joplin|htop/'
+history | awk $exclw| awk '{print substr($0,6)}' | sort | uniq   >> ~/historybk.txt && cat ~/historybk.txt | sort | uniq   > ~/bashhistory.txt.tmp && mv ~/bashhistory.txt.tmp ~/historybk.txt     
+
+
+
+}
 
 # Set the title string at the top of your current terminal window or terminal window tab
 set-title() {
