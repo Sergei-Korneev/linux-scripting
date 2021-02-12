@@ -356,7 +356,28 @@ alias susp='systemctl suspend'
 alias hibern='systemctl hibernate'
 alias edtor='sudo nano /etc/tor/torrc'
 
+#archiver
+c7z(){
 
+if [ -z "$1" ]
+then
+  echo "c7z <file or folder to compress> <password [optional]>"
+  echo 
+  return 1
+fi  
+
+
+if [ -z "$2" ]
+then
+  pass=""
+else 
+  pass=-p"$2"
+fi  
+
+7z a $pass "$1".7z  "$1"
+
+ 
+}
 
 #youtubdl
 addv(){
