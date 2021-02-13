@@ -379,6 +379,31 @@ fi
  
 }
 
+
+d7z(){
+
+if [ -z "$1" ]
+then
+  echo "c7z <file or folder to decompress> <password [optional]>"
+  echo 
+  return 1
+fi  
+
+
+if [ -z "$2" ]
+then
+  pass=""
+else 
+  pass=-p"$2"
+fi  
+
+mkdir -p "$(dirname "${1}")/$(basename "${1}")_decompressed"
+
+7z x $pass "$1"  -o"$(dirname "${1}")/$(basename "${1}")_decompressed"
+
+ 
+}
+
 #youtubdl
 addv(){
 echo "$*">> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt
