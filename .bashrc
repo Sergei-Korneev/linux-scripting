@@ -508,9 +508,30 @@ set-title() {
 
 #ACPI
 
+#Temp 
+
+tempcheck(){
+if [[ $(cat /sys/class/thermal/thermal_zone*/temp | awk 'NR == 1' |awk '{ printf "%.0f" ,$1/1000}') -gt 75 ]]; then paplay '/home/sergei/mysounds/temp_is_above75.ogg' ;fi
+}
+
+
+#Memory
+
+memorycheck(){
+if [[ $(cat /proc/meminfo | grep MemAvailable | awk '{ printf "%.0f" ,$2/1024 }') -lt 3000 ]]
+then 
+#if out of memory and oomkiller did not the job
+  kill -3 $(ps -eo pmem,vsize,pid,cmd | sort -k 1 -nr | head -1 |awk '{print $3}')
+  paplay '/home/sergei/mysounds/memorylowcloseapp.ogg'
+fi
+}
+
+
 wakemeup(){
 
-
+echo 'Date:'
+echo $(date)
+echo
 if [ -z "$1" ]
 then
       echo "use: wakemeup  2020-02-28 15:00 or  wakemeup  15:00 "
@@ -525,8 +546,43 @@ sudo rtcwake -m show
 }
 
 
+sleepat(){
+echo 'Date:'
+echo $(date)
+echo
+if [ -z "$1" ]
+then
+echo 'use: '
+echo 'sleepat <"2:30 PM 10/21/2014">'
+echo 'sleepat <"2:30 PM 21.10.14">'
+echo 'sleepat <"now + 30 minutes">'
+echo 'sleepat <"now + 1 hour">'
+echo
+return 1
+fi
+
+echo 'systemctl suspend'  | sudo at "$1"
+echo 
+echo 'Jobs:'
+sudo atq 
+}
+
+alias wtemp='set-title "sensors"  && watch sensors'
 
 
+
+
+searchist () {
+
+if [ -z "$1" ]
+then
+      echo "searchist <keyword>"
+      return 1
+fi
+
+cat ~/historybk.txt  | egrep -e "$1"
+
+}  
 
 #Shell
 #Gnome wallpaper changer
@@ -569,10 +625,13 @@ nautilus -q
 killall -3 gnome-shell 
 '
 
-
-
+#weather
+weather(){
+dumpp=$(w3m -dump_source   'https://www.gismeteo.ru/weather-samarkand-5350/now/' ) && humid=$(echo "$dumpp" | grep -Po 'nowinfo__value\">[[:digit:]][[:digit:]]<\/div><div class=\"nowinfo__measure\">%<' | tr -dc '0-9') && temp=$(echo $dumpp | grep -Po 'nowvalue__sign\"\>[&|+|-].{55}' | sed  s/plus/+/g | tr -dc '0-9|\-,+') && notify-send Weather "Overboard temperature: $temp celsius and Humidity: $humid %"
+}
 #dpkg-query -L tor | grep torrc
 #--------------------------------------------------------------------------------------------------
+
 
 
 
