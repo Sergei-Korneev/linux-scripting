@@ -627,7 +627,7 @@ killall -3 gnome-shell
 
 #weather
 weather(){
-dumpp=$(w3m -dump_source   'https://www.gismeteo.ru/weather-samarkand-5350/now/' ) && humid=$(echo "$dumpp" | grep -Po 'nowinfo__value\">[[:digit:]][[:digit:]]<\/div><div class=\"nowinfo__measure\">%<' | tr -dc '0-9') && temp=$(echo $dumpp | grep -Po 'nowvalue__sign\"\>[&|+|-].{55}' | sed  s/plus/+/g | tr -dc '0-9|\-,+') && notify-send Weather "Overboard temperature: $temp celsius and Humidity: $humid %"
+dumpp=$(w3m -dump_source   'https://www.gismeteo.ru/weather-samarkand-5350/now/' ) && humid=$(echo "$dumpp" | grep -Po 'nowinfo__value\">[[:digit:]][[:digit:]]<\/div><div class=\"nowinfo__measure\">%<' | tr -dc '0-9') && temp=$(echo $dumpp | grep -Po 'nowvalue__sign\"\>[&|+|-].{55}' | sed  -e 's/minus/-/g;s/plus/+/g'  | tr -dc '0-9|\-,+') && notify-send Weather "Overboard temperature is $temp celsius and humidity $humid %"
 }
 #dpkg-query -L tor | grep torrc
 #--------------------------------------------------------------------------------------------------
