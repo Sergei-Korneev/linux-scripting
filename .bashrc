@@ -202,6 +202,43 @@ ffmpeg -loop 1 -y -i "$2" -i "$1"  -shortest -acodec copy -vcodec mjpeg "$1".mp4
 
 }
 
+#sudo apt install pavucontrol libsox-fmt-pulse sox    # install dependencies
+#pactl load-module module-loopback latency_msec=100   # listen to your microphone in normal mode (DON'T TURN UP YOUR VOLUME TOO HIGH)
+#pactl unload-module module-loopback                  # stop listening to your microphone
+#sox -d -d pitch -700 contrast 100 echo 0.9 0.9 5 0.6 # listen to your voice being changed live (DON'T TURN UP YOUR VOLUME TOO HIGH)
+
+
+mkvo1 (){
+pavucontrol >/dev/null 2>&1 & 
+pactl unload-module module-null-sink&&pactl load-module module-null-sink
+nice -8 sox -t pulseaudio default -t pulseaudio null pitch -800
+
+}
+
+
+mkvo2 (){
+pavucontrol >/dev/null 2>&1 & 
+pactl unload-module module-null-sink&&pactl load-module module-null-sink
+nice -8 sox -t pulseaudio default -t pulseaudio null pitch -400
+
+}
+
+
+mkvo3 (){
+pavucontrol >/dev/null 2>&1 & 
+pactl unload-module module-null-sink&&pactl load-module module-null-sink
+nice -8 sox -t pulseaudio default -t pulseaudio null pitch +400
+
+}
+
+
+mkvo4 (){
+pavucontrol >/dev/null 2>&1 & 
+pactl unload-module module-null-sink&&pactl load-module module-null-sink
+
+nice -8 sox -t pulseaudio default -t pulseaudio null pitch +300   bend .35,180,.25  .15,740,.53  0,-520,.3
+}
+
 
 alias scrs='gnome-screenshot -a -c'
 
