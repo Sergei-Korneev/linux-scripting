@@ -96,17 +96,36 @@ alias l='ls -CF'
 # My aliases----------------------------------------------------------------------------------------------------------------
 
 #Apps
-alias tg680='/opt/telegram/telegram -many -workdir  /media/NTRCD/MYDOCS/ALL/local/all/tdata/680  >/dev/null 2>&1 &
-disown $!'
 
-alias tg9487='/opt/telegram/telegram -many -workdir /media/NTRCD/MYDOCS/ALL/local/all/tdata/94870   >/dev/null 2>&1 & 
-disown $!'
+tg () {
+pt=/media/NTRCD/MYDOCS/ALL/local/all/tdata/
+echo Path: $pt
+echo
+if [ -z "$1" ]
+then
+  echo "tg <foldername>"
+  echo 
+  return 1
+fi  
+
+if [ ! -d "$pt$1" ]
+then
+  echo "Path not found. Exisiting"
+  ls $pt
+  echo 
+  return 1
+fi  
+
+
+/opt/telegram/telegram -many -workdir "$pt$1"  >/dev/null 2>&1 &disown $!
+
+
+}
+
 
 alias joplin='cd "/media/NTRCD/MYDOCS/ALL/local/all/.joplin" && ./Joplin.AppImage.sh   >/dev/null 2>&1 & 
 disown $!'
 
-alias trill='export TRILIUM_DATA_DIR='/media/NTRCD/MYDOCS/ALL/local/all/triliumdata' && trilium >/dev/null 2>&1 & 
-disown $!'
 
 alias fprof1='firefox -start-debugger-server --profile "/media/NTRCD/MYDOCS/ALL/local/all/FirefoxProfile"   >/dev/null 2>&1 & 
 disown $!'
@@ -208,6 +227,16 @@ ffmpeg -loop 1 -y -i "$2" -i "$1"  -shortest -acodec copy -vcodec mjpeg "$1".mp4
 #sox -d -d pitch -700 contrast 100 echo 0.9 0.9 5 0.6 # listen to your voice being changed live (DON'T TURN UP YOUR VOLUME TOO HIGH)
 
 
+
+dictn () {
+
+echo "-------  $*  -------" >> /media/NTRCD/MYDOCS/DESKTOP/dict.txt
+dict $* >> /media/NTRCD/MYDOCS/DESKTOP/dict.txt
+
+dict $*
+
+}
+
 mkvo1 (){
 pavucontrol >/dev/null 2>&1 & 
 pactl unload-module module-null-sink&&pactl load-module module-null-sink
@@ -240,6 +269,13 @@ nice -8 sox -t pulseaudio default -t pulseaudio null pitch +300   bend .35,180,.
 }
 
 
+mkvo5 (){
+pavucontrol >/dev/null 2>&1 & 
+pactl unload-module module-null-sink&&pactl load-module module-null-sink
+nice -8 sox -t pulseaudio default -t pulseaudio null pitch -200
+
+}
+
 alias scrs='gnome-screenshot -a -c'
 
 #Luks related
@@ -266,7 +302,6 @@ sudo mkdir -p /media/$image
 sudo cryptsetup --type tcrypt open $pathto $image   && \
 sudo mount -o uid=1000 /dev/mapper/$image /media/$image
 }
-
 
 
 moall(){
@@ -456,6 +491,7 @@ cd /media/NTRCD/MYDOCS/ALL/local/all/ytdl && python3 yb.py $1
 
 
 
+alias noten='echo Listening for text on 9001...&&nc -lp 9001 >> /media/NTRCD/MYDOCS/DESKTOP/notes_net.txt'
 alias addvn='echo Listening for links on 9000...&&nc -lp 9000 >> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt'
 alias updyoutdl='sudo wget -O /usr/bin/youtube-dl https://yt-dl.org/downloads/latest/youtube-dl ; sudo chmod 755 /usr/bin/youtube-dl;sudo cp /usr/bin/youtube-dl /usr/local/bin/youtube-dl; sudo chmod 755  /usr/local/bin/youtube-dl; sudo cp /usr/bin/youtube-dl /home/sergei/.local/bin/youtube-dl; sudo chmod 755 /home/sergei/.local/bin/youtube-dl'
 
@@ -467,8 +503,15 @@ alias graphicsint='sudo system76-power graphics integrated'
 alias graphicsnvd='sudo system76-power graphics nvidia'
 alias graphicscom='sudo system76-power graphics compute'
 #Runs an app when pc in hybrid gpu mode
-alias graphicsvul='__NV_PRIME_RENDER_OFFLOAD=1 $1'
-alias graphicsglx='__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia $1'
+
+graphicsvul () {
+__NV_PRIME_RENDER_OFFLOAD=1 $1
+}
+
+
+graphicsglx () {
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia $1
+}
 
 notab(){
 echo $* >> /media/NTRCD/MYDOCS/DESKTOP/NOTES.txt
@@ -512,6 +555,7 @@ function highlight() {
 }
 
 #save sorted bash history 
+
 
 
 savehist(){
@@ -672,6 +716,11 @@ dumpp=$(w3m -dump_source   'https://www.gismeteo.ru/weather-samarkand-5350/now/'
 
 
 
+traffic ()
+{
+read p  < "$HOME/load.txt"
+curl -v    http://cab.ars.uz/auth/login  --cookie /tmp/cookie.txt --cookie-jar /tmp/cookie.txt  -d "$p" && cur=$(curl --cookie /tmp/cookie.txt --cookie-jar /tmp/cookie.txt http://cab.ars.uz  |   grep -Po '<td><strong>[[:digit:]]*,[[:digit:]]* Мб' |  tr -dc '0-9,' ) &&  notify-send Traffic "$cur Mb left"&& rm /tmp/cookie.txt
+}
 
 
 
