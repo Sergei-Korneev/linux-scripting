@@ -133,6 +133,9 @@ disown $!'
 alias thunder='thunderbird -profile "/media/NTRCD/MYDOCS/ALL/local/all/thunderbird/.thunderbird/sa4o6cv0.default"   >/dev/null 2>&1 &
 disown $!'
 
+alias gdict='"/media/NTRCD/MYDOCS/ALL/local/all/dsl/GoldenDict.AppImage" >/dev/null 2>&1 &
+disown $!'
+
 
 #ffmpeg
 makegif () {
@@ -490,7 +493,7 @@ cd /media/NTRCD/MYDOCS/ALL/local/all/ytdl && python3 yb.py $1
 }
 
 
-
+alias cls='clear'
 alias noten='echo Listening for text on 9001...&&nc -lp 9001 >> /media/NTRCD/MYDOCS/DESKTOP/notes_net.txt'
 alias addvn='echo Listening for links on 9000...&&nc -lp 9000 >> /media/NTRCD/MYDOCS/ALL/local/all/ytdl/video.txt'
 alias updyoutdl='sudo wget -O /usr/bin/youtube-dl https://yt-dl.org/downloads/latest/youtube-dl ; sudo chmod 755 /usr/bin/youtube-dl;sudo cp /usr/bin/youtube-dl /usr/local/bin/youtube-dl; sudo chmod 755  /usr/local/bin/youtube-dl; sudo cp /usr/bin/youtube-dl /home/sergei/.local/bin/youtube-dl; sudo chmod 755 /home/sergei/.local/bin/youtube-dl'
