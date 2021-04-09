@@ -224,6 +224,9 @@ ffmpeg -loop 1 -y -i "$2" -i "$1"  -shortest -acodec copy -vcodec mjpeg "$1".mp4
 
 }
 
+
+
+
 #sudo apt install pavucontrol libsox-fmt-pulse sox    # install dependencies
 #pactl load-module module-loopback latency_msec=100   # listen to your microphone in normal mode (DON'T TURN UP YOUR VOLUME TOO HIGH)
 #pactl unload-module module-loopback                  # stop listening to your microphone
@@ -264,6 +267,8 @@ nice -8 sox -t pulseaudio default -t pulseaudio null pitch +400
 }
 
 
+
+
 mkvo4 (){
 pavucontrol >/dev/null 2>&1 & 
 pactl unload-module module-null-sink&&pactl load-module module-null-sink
@@ -279,17 +284,29 @@ nice -8 sox -t pulseaudio default -t pulseaudio null pitch -200
 
 }
 
-alias scrs='gnome-screenshot -a -c'
+recorder () {
+name=$(date |  sed -r 's/[ ;:.-=\$\#\@\$\&\*\(\)+~\%]+/_/g').ogg
+arecord -f S16_LE -c 2 -r 192000 -t raw | oggenc - -r -C 2 -R 192000 -q 5 -o $name
+}
+
+#PasterBin
+
+pastb () {
+
+if [ -z "$1" ]
+then
+      echo "pastb text"
+      return 1
+fi
+echo $*  | nc termbin.com 9999
+
+}
+
 
 #Luks related
 crym(){
 image=NTRCD
 part=sda4
-
-
-
-
-
 
 if [ -b "/dev/mapper/$image" ]; then
     echo "/dev/mapper/$image exists."
@@ -602,7 +619,7 @@ if [[ $(cat /sys/class/thermal/thermal_zone*/temp | awk 'NR == 1' |awk '{ printf
 #Memory
 
 memorycheck(){
-if [[ $(cat /proc/meminfo | grep MemAvailable | awk '{ printf "%.0f" ,$2/1024 }') -lt 3000 ]]
+if [[ $(cat /proc/meminfo | grep MemAvailable | awk '{ printf "%.0f" ,$2/1024 }') -lt 2000 ]]
 then 
 #if out of memory and oomkiller did not the job
   kill -3 $(ps -eo pmem,vsize,pid,cmd | sort -k 1 -nr | head -1 |awk '{print $3}')
