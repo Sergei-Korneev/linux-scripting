@@ -136,6 +136,8 @@ disown $!'
 alias gdict='"/media/NTRCD/MYDOCS/ALL/local/all/dsl/GoldenDict.AppImage" >/dev/null 2>&1 &
 disown $!'
 
+alias electrum='"/media/NTRCD/MYDOCS/ALL/local/all/electrum/electrum.AppImage" -w "/media/NTRCD/MYDOCS/ALL/local/all/electrum/wallets/default_wallet"  >/dev/null 2>&1 &
+disown $!'
 
 #ffmpeg
 makegif () {
@@ -192,6 +194,38 @@ fi
 
 
 }
+
+
+
+#rsync
+
+rsyncpull () {
+echo  Pull files from server:$1 source:$2 dest:$3
+time rsync -truW  --ignore-existing   --stats --progress   rsync://$1$2 $3
+           }
+
+
+
+
+rsyncpush () {
+echo  Push files to server:$1 source:$2 dest:$3
+time rsync -truW  --ignore-existing   --stats --progress  $2 rsync://$1$3 
+           }
+
+
+rsyncupdpush () {
+echo  Update + delete files from server:$1 source:$2 dest:$3
+time rsync -truXAgpW   --stats --progress $2  rsync://$1$3  --delete
+           }
+
+
+
+
+
+rsyncupdpull () {
+echo  Update + delete files from local folder server:$1 source:$2 dest:$3
+time rsync -truXAgpW   --stats --progress  rsync://$1$2  $3    --delete
+           }
 
 
 
@@ -301,6 +335,9 @@ fi
 echo $*  | nc termbin.com 9999
 
 }
+
+#invert screen colors
+alias invcol='xcalib -i -a'
 
 
 #Luks related
