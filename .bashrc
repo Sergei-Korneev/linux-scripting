@@ -95,6 +95,19 @@ alias l='ls -CF'
 
 # My aliases----------------------------------------------------------------------------------------------------------------
 
+#bashtabs
+
+btabs () {
+gnome-terminal --tab --title "Htop" -- "htop"
+gnome-terminal --tab --title "Sensors" --command "watch sensors"
+gnome-terminal --tab --title "Python" -- "python3"
+#gnome-terminal --tab --title "Tor" --command ""
+
+
+
+}
+
+
 #Apps
 
 tg () {
@@ -182,15 +195,40 @@ ffmpeg   -i "$1"    -c:v h264_nvenc  -b:v $2 -maxrate $2 -bufsize $2 -vf  "yadif
 #simple video grabber
 sgrab () {
 
-if [ -z "$1" ] || [ -z "$2"]
+useragent="Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"
+
+
+if [ -z "$1" ] || [ -z "$2" ]
 then
-  echo "grabv <URL> <ext e.g. mp4> "
+  echo "grabv <URL> <ext e.g. mp4 or m3u8> <link order e.g. 1. If omited, will show all links found on page> "
+  echo "grabv <URL> d for direct link download"
   echo 
   return 1
 fi  
 
+if [ "$2" == "d" ] 
+  then 
+    echo Direct link...
+    ffmpeg -i "$1" -c copy ${RANDOM:0:10}${RANDOM:0:10}.mkv
+    return 0
+fi
 
- wget --no-check-certificate $(curl "$1"  | grep -oP "http.*.$2\b"  | head -n 1)
+
+if [ -z "$3" ] 
+  then
+  echo Pattern "http.*\.$2\b"
+
+  curl -A "$useagent" "$1" -s  | grep -oP "http.*\.$2\b"
+  
+  echo Pattern ".*\.$2\b"
+
+  curl -A "$useagent" "$1" -s  | grep -oP ".*\.$2\b"
+
+  return 0
+fi
+
+   echo Webpage link...
+   ffmpeg -i $(curl -A "$useragent" "$1"  | grep -oP "http.*\.$2\b"  | head -n $3) -c copy ${RANDOM:0:10}${RANDOM:0:10}.mkv
 
 
 }
@@ -226,6 +264,53 @@ rsyncupdpull () {
 echo  Update + delete files from local folder server:$1 source:$2 dest:$3
 time rsync -truXAgpW   --stats --progress  rsync://$1$2  $3    --delete
            }
+
+ddsync () {
+
+
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]  
+then
+  echo "ddsync <source> <destinaction> <blocksize> <count>"
+  echo 
+  return 1
+fi
+
+
+
+#if ! [ -z "$4" ]; then count=$4; else count=1; fi
+
+if sudo echo
+ then
+ bs=$3 ; skip=0 ; first=$1 ; second=$2 ; eof=0
+ time while true
+
+ #compare two chunks
+ do  
+        if ! [ -z "$4" ]; then [ $skip -eq $4 ] && break; fi
+        if ! cmp  --silent  <(if ! sudo dd status=none skip=$skip bs=$bs count=1 if=$first 2> /dev/null; then echo 1; fi )  <(if ! sudo dd status=none skip=$skip bs=$bs count=1 if=$second 2> /dev/null; then echo 2 ; fi) 2> /dev/null 
+         
+        then
+              
+             #write to output 
+             if ! (sudo  dd seek=$skip skip=$skip bs=$bs count=1 if=$first of=$second  conv=notrunc status=progress) 
+              then 
+                   #echo Unable to write to $second
+                   break
+              else
+                   echo Diff at $skip*$bs
+                   echo
+                   echo --------------
+             fi  
+        else echo Match $skip*$bs
+   fi 
+ 
+((skip=skip+1))
+done
+sync
+fi
+
+}
+
 
 
 
