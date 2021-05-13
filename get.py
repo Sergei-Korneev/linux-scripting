@@ -26,23 +26,9 @@ def extract_arc(file,extract_dir):
      print ("Cannot extract file " + file)
 
 
-#def getFilename_fromCd(cd):
-
-#Get filename from content-disposition
-# print (cd)
-# if not cd:
-#    return None
-# fname = re.findall('filename=(.+)', cd)
- 
-# if len(fname) == 0:
-#    return None
-# return fname[0]
-
-
-
 
 def Download(url): 
-# try:
+ try:
 
 
    if not re.search("^.*\/\/.*\/.*[^/]+$", url):
@@ -55,36 +41,18 @@ def Download(url):
    lastpos=len(url)
    filename=url[firstpos+1:lastpos]
 
-   
-   #print (response.headers.get('content-disposition'))
-
-   #filename = getFilename_fromCd(response.headers.get('content-disposition'))
-   #filename = rfc6266.parse_requests_response(r).filename_unsafe
-   
    with open(filename, "wb") as f:
         
-    #total_length = response.headers.get('content-length')
-
-    #if total_length is None: # no content length header
-        #f.write(response.content)
-    #else:
+ 
     dl = 0
-        #total_length = int(total_length)
+
     for data in response.iter_content(chunk_size=4096):
             dl += 4096/(1024*1024)
             f.write(data)
-            #done = int(50 * dl / total_length)
             sys.stdout.write("\r%d Mb " % dl + " " + filename )    
             sys.stdout.flush()
 
    print("\n\nSaved" ) 
- #except:
-   #print ("Cannot download file." + url)
+ except:
+   print ("Cannot download file." + url)
 
-
-#Download("https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz")
-#extract_arc("ffmpeg-git-amd64-static.tar.xz","/media/NTRCD/MYDOCS/Downloads")
-
-#print (find_all("ffmpeg","/media/NTRCD/MYDOCS/Downloads" ))
-#t=find_all("ffmpeg","/media/NTRCD/MYDOCS/Downloads" )
-#shutil.move(t[0], "./ffmpeg")
