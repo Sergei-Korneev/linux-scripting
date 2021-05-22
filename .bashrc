@@ -860,8 +860,13 @@ dumpp=$(w3m -dump_source   'https://www.gismeteo.ru/weather-samarkand-5350/now/'
 
 traffic ()
 {
-read p  < "$HOME/load.txt"
-curl -v    http://cab.ars.uz/auth/login  --cookie /tmp/cookie.txt --cookie-jar /tmp/cookie.txt  -d "$p" && cur=$(curl --cookie /tmp/cookie.txt --cookie-jar /tmp/cookie.txt http://cab.ars.uz  |   grep -Po '<td><strong>[[:digit:]]*,[[:digit:]]* Мб' |  tr -dc '0-9,' ) &&  notify-send Traffic "$cur Mb left"&& rm /tmp/cookie.txt
+file1=~/load.txt
+read payload <<< $(sed -n '1p' $file1)
+read url1 <<< $(sed -n '2p' $file1)
+read url2 <<< $(sed -n '3p' $file1)
+cookie=/tmp/${RANDOM:0:9}.txt
+curl -v    $url1  --cookie $cookie --cookie-jar $cookie  -d "$payload" && cur=$(curl --cookie $cookie --cookie-jar $cookie $url2  |   grep -Po '<td><strong>[[:digit:]]*,[[:digit:]]* Мб' |  tr -dc '0-9,' ) &&  notify-send Traffic "$cur Mb left"&& rm $cookie
+
 }
 
 
