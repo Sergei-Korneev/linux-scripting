@@ -174,21 +174,125 @@ ffmpeg -loop 1 -i "$1" -i "$2" -shortest -acodec copy  -vf fps=1 $1".mp4"
 
 makemp4 () {
 
-if [ -z "$1" ]
+
+
+# Default Values
+
+
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    -e|--extension)
+    EXTENSION="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -s|--path)
+    SPATH="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -b|--bitrate)
+    BITRATE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -c|--scale)
+    SCALE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -d|--delete)
+    DELETE="yes"
+    shift
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+echo "FILE EXTENSION  = ${EXTENSION}"
+echo "PATH            = ${SPATH}"
+echo "BITRATE         = ${BITRATE}"
+echo "SCALE           = ${SCALE}"
+echo "DELETE          = ${DELETE}"
+
+
+if [[ -n $1 ]]; then
+    echo "Unknown argument:"
+    echo "$1"
+    return 1
+fi
+
+
+
+if [ -z "$SPATH" ]
 then
-  echo "makemp4 <file to convert> <bitrate (e.g. 1M,2000k)>  <scale>"
+  echo "makemp4 -s file or folder to convert -b bitrate e.g. 1M,2000k -c  scale e.g 960 -e extension to search in subfolders e.g. mp4 -d delete source file[s]"
   echo 
   return 1
 fi  
 
-scale=""
-if ! [ -z "$3" ]
+
+if ! [ -z "$SCALE" ]
 then
-      scale=",scale=$3:-1"
+      scale=",scale=$SCALE:-1"
+else  
+      scale=""
 fi  
 
-  
-ffmpeg   -i "$1"    -c:v h264_nvenc  -b:v $2 -maxrate $2 -bufsize $2 -vf  "yadif$scale"  "$1.mp4"
+
+if  [ -z "$BITRATE" ]
+then
+     
+       bitrate="1000k"
+else 
+       bitrate="$BITRATE"
+fi 
+
+
+if ! [ -z "$EXTENSION" ]
+then
+        
+        ext="$EXTENSION"
+else 
+	ext="mp4"
+fi 
+
+
+
+if [[ -d "$SPATH" ]]; then
+  if  [ -z "$EXTENSION" ]
+	then
+	  echo "You must specify an extension e.g mp4"
+	  return 1
+  fi 
+    find  "$SPATH"   -type f -name \*.$ext  | while read F ; do
+      ffmpeg -i "/$F" -c:v h264_nvenc -b:v $bitrate -maxrate $bitrate -bufsize $bitrate -vf "yadif$scale" "/$F.mkv" < /dev/null 
+      if ! [ -z "$DELETE" ] 
+       then 
+         rm "/$F"
+      fi 
+     done
+ 
+elif [[ -f "$SPATH" ]]; then
+    ffmpeg   -i "$SPATH"    -c:v h264_nvenc  -b:v $bitrate -maxrate $bitrate -bufsize $bitrate -vf  "yadif$scale"  "$SPATH.mkv"
+else
+    echo "$SPATH is not a file or folder"
+    return  1
+fi
+
+for x in " SPATH BITRATE SCALE EXTENSION DELETE " ; do unset $x ; done
+
+
+return 0
 }
 
 
@@ -234,8 +338,9 @@ fi
 }
 
 
+# Network
 
-#rsync
+# rsync
 
 rsyncpull () {
 echo  Pull files from server:$1 source:$2 dest:$3
@@ -264,6 +369,27 @@ rsyncupdpull () {
 echo  Update + delete files from local folder server:$1 source:$2 dest:$3
 time rsync -truXAgpW   --stats --progress  rsync://$1$2  $3    --delete
            }
+
+
+ч
+# Netework info
+
+netinf () {
+sudo echo 
+network="192.168.1.0/24"
+echo;echo "ifconfig -->";echo 
+ifconfig
+#echo;echo "arp-->";echo 
+#arp -an  | grep ether
+echo;echo "nmap-->";echo 
+nmap -sP $network 
+echo;echo "ip route list-->";echo 
+ip route list
+echo;echo "ip neigh-->";echo 
+ip neigh | grep ":"
+echo;echo "local ports-->";echo 
+sudo netstat -tulpn | grep LISTEN
+}
 
 ddsync () {
 
